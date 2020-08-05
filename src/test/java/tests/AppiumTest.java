@@ -47,9 +47,9 @@ public class AppiumTest {
         String linkText = driver.findElement(By.id("com.ruselkim.wiremocktest:id/details_url")).getText();
         String author = driver.findElement(By.id("com.ruselkim.wiremocktest:id/details_author")).getText();
         String newsTitle = driver.findElement(By.id("com.ruselkim.wiremocktest:id/toolbarTitleView")).getText();
+        Assertions.assertEquals("СВР вела слежку за Сафроновым с осени 2019 года - Lenta.ru", newsTitle);
         Assertions.assertEquals("https://lenta.ru/news/2020/08/05/sledili/", linkText);
         Assertions.assertEquals("Инкогнито", author);
-        Assertions.assertEquals("СВР вела слежку за Сафроновым с осени 2019 года - Lenta.ru", newsTitle);
     }
 
     @Test
