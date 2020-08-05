@@ -4,8 +4,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -14,13 +13,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
 public class AppiumTest {
 
-    AppiumDriver<MobileElement> driver = null;
+    private static AppiumDriver<MobileElement> driver = null;
+    public static List<MobileElement> news = null;
 
-    @Test
-    public void testMethod() {
-
+    @BeforeEach
+    void driverInit() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator");
         capabilities.setCapability(MobileCapabilityType.UDID, "emulator-5554");
@@ -32,19 +32,31 @@ public class AppiumTest {
         try {
             driver = new AndroidDriver<>(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            driver.findElement(By.id("com.ruselkim.wiremocktest:id/newsButton")).click();
-            List<MobileElement> news = driver.findElements(By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.LinearLayout"));
-            Assert.assertEquals(7, news.size());
-            news.get(0).click();
-            String linkText = driver.findElement(By.id("com.ruselkim.wiremocktest:id/details_url")).getText();
-            String author = driver.findElement(By.id("com.ruselkim.wiremocktest:id/details_author")).getText();
-            String newsTitle = driver.findElement(By.id("com.ruselkim.wiremocktest:id/toolbarTitleView")).getText();
-            Assert.assertEquals("https://lenta.ru/news/2020/08/05/sledili/", linkText);
-            Assert.assertEquals("Инкогнито", author);
-            Assert.assertEquals("СВР вела слежку за Сафроновым с осени 2019 года - Lenta.ru", newsTitle);
-
         } catch (MalformedURLException e) {
-            System.out.println(e.getMessage());
+            e.getMessage();
         }
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("Проверка содержимого первой новости на странице")
+    public void testFirstNewsContent() {
+        driver.findElement(By.id("com.ruselkim.wiremocktest:id/newsButton")).click();
+        news = driver.findElements(By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.LinearLayout"));
+        news.get(0).click();
+        String linkText = driver.findElement(By.id("com.ruselkim.wiremocktest:id/details_url")).getText();
+        String author = driver.findElement(By.id("com.ruselkim.wiremocktest:id/details_author")).getText();
+        String newsTitle = driver.findElement(By.id("com.ruselkim.wiremocktest:id/toolbarTitleView")).getText();
+        Assertions.assertEquals("https://lenta.ru/news/2020/08/05/sledili/", linkText);
+        Assertions.assertEquals("Инкогнито", author);
+        Assertions.assertEquals("СВР вела слежку за Сафроновым с осени 2019 года - Lenta.ru", newsTitle);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Проверка отображения количества новостей на странице")
+    public void testNewsCount() {
+        driver.findElement(By.id("com.ruselkim.wiremocktest:id/newsButton")).click();
+        Assertions.assertEquals(7, news.size());
     }
 }
